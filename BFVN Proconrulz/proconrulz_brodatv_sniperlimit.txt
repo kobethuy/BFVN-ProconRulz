@@ -122,7 +122,6 @@ if %server_dmrlimit% == 1;if %ini_lang_%p%% == GER;Not Admin;if %server_dlimit_n
 if %server_dmrlimit% == 1;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit% +%p%;Set %server_dlimit_name_[%p%]% ON
 if %server_dmrlimit% == 0;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% +%p%;Set %server_dlimit_name_[%p%]% ON
 
-
 #### SNIPERS! Someone left his slot or left the game
 #### Delete PlayerYell 5 in both language versions if you dont wanna inform player using short YELL after reserving slot 
 On Kill;Not Admin;Not Damage SniperRifle;Not Damage Explosive;Not Damage Melee;Not Damage Handgun; Not Weapon U_SerbuShorty
