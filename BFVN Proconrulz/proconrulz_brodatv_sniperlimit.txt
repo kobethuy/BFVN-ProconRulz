@@ -1,0 +1,187 @@
+#### VERSION 1.69
+#### UPDATES: http://bit.ly/sniperlimit
+#### ASDL - Advanced Sniper/DMR Limit by Brodatv
+#### Contact? kochamczarnakawe@gmail.com
+
+
+#### Only once when player is joining the server, his countryflag will be saved to INI (resets or downtime will not delete these variables)
+On Spawn;PlayerOnce
+If %pcountry% == Poland;Set %ini_lang_%p%% POL
+If %pcountry% != Poland;Set %ini_lang_%p%% ENG
+If %pcountry% == German;Set %ini_lang_%p%% GER
+#Set %ini_lang_%p%% ENG
+Set %ini_pflag_%p%% %pcountry%
+
+On Say;Text !polski;PlayerSay [LANGUAGE] Jezyk zmieniony na POLSKI.;set %ini_lang_%p%% POL
+On Say;Text !polish;PlayerSay [LANGUAGE] Jezyk zmieniony na POLSKI.;set %ini_lang_%p%% POL
+On Say;Text !german;PlayerSay [LANGUAGE] Sprache ist auf DEUTSCH geändert.;set %ini_lang_%p%% GER
+On Say;Text !deutsch;PlayerSay [LANGUAGE] Sprache ist auf DEUTSCH geändert.;set %ini_lang_%p%% GER
+On Say;Text !english;PlayerSay [LANGUAGE] Language changed to ENGLISH.;set %ini_lang_%p%% ENG
+ 
+#### Max snipers per map, remember that you can set up different limit for maps, second numer is if map isn't recognized as "special-limit"
+#### Second number will be used IF MAP IS DIFFERENT than filter! Settings below are made for 48+ hc server.
+#### For example most camping maps like roofs on Flood Zone = 2 snipers max.
+#### Change "Not Admin" to "Not Protected"
+
+#### Enable DMR limit using 1, disable using 0
+On Spawn;ServerFirst;Set %server_dmrlimit% 1
+
+#### You can set up sniper and dmr slots in-game using commands below, only the ongoing round
+On Say;Admin;Text !setsniperlimit;Set %server_slimit% %targettext%;Set %server_slimit_name% 0;set %server_slimit_team_[%ptk%]% 0
+On Say;Admin;Text !setdmrlimit;Set %server_dlimit% %targettext% ;Set %server_dlimit_name% 0;set %server_dlimit_team_[%ptk%]% 0
+
+#### If map isn't on the list or isn't recognized by ProconRulz/Procon code will set up first line as default
+On Spawn;ServerFirst;Set %server_slimit% 4;Set %server_dlimit% 4
+
+# Delete THIS PART BELOW if you want same sniper/dmr limit on all maps
+On Spawn;ServerFirst;Map MP_Prison;Set %server_slimit% 0;Set %server_dlimit% 3
+On Spawn;ServerFirst;Map MP_Tremors;Set %server_slimit% 4;Set %server_dlimit% 3
+On Spawn;ServerFirst;Map MP_Resort;Set %server_slimit% 3;Set %server_dlimit% 4
+On Spawn;ServerFirst;Map MP_Naval;Set %server_slimit% 4;Set %server_dlimit% 4
+On Spawn;ServerFirst;Map MP_Journey;Set %server_slimit% 4;Set %server_dlimit% 4
+On Spawn;ServerFirst;Map MP_Flooded;Set %server_slimit% 2;Set %server_dlimit% 3
+On Spawn;ServerFirst;Map MP_Damage;Set %server_slimit% 3;Set %server_dlimit% 4
+On Spawn;ServerFirst;Map MP_Abandoned;Set %server_slimit% 4;Set %server_dlimit% 4
+On Spawn;ServerFirst;Map MP_TheDish;Set %server_slimit% 4;Set %server_dlimit% 5
+On Spawn;ServerFirst;Map XP0_Caspian;Set %server_slimit% 4;Set %server_dlimit% 5
+On Spawn;ServerFirst;Map XP0_Oman;Set %server_slimit% 3;Set %server_dlimit% 3
+On Spawn;ServerFirst;Map XP0_Metro;Set %server_slimit% 0;Set %server_dlimit% 3
+On Spawn;ServerFirst;Map XP0_Firestorm;Set %server_slimit% 4;Set %server_dlimit% 4
+On Spawn;ServerFirst;Map XP1_001;Set %server_slimit% 2;Set %server_dlimit% 3
+On Spawn;ServerFirst;Map XP1_002;Set %server_slimit% 3;Set %server_dlimit% 4
+On Spawn;ServerFirst;Map XP1_003;Set %server_slimit% 4;Set %server_dlimit% 3
+On Spawn;ServerFirst;Map XP1_003;Set %server_slimit% 3;Set %server_dlimit% 3
+On Spawn;ServerFirst;Map XP3_MarketPl;Set %server_slimit% 4;set %server_dlimit% 3
+On Spawn;ServerFirst;Map XP3_UrbanGdn;Set %server_slimit% 2;set %server_dlimit% 3
+On Spawn;ServerFirst;Map XP3_Prpgand;Set %server_slimit% 3;set %server_dlimit% 3
+On Spawn;ServerFirst;Map XP3_WtrFront;Set %server_slimit% 3;set %server_dlimit% 3
+On Spawn;ServerFirst;Map XP4_Arctic;Set %server_slimit% 2;set %server_dlimit% 3
+On Spawn;ServerFirst;Map XP4_SubBase;Set %server_slimit% 3;set %server_dlimit% 3
+On Spawn;ServerFirst;Map XP4_Titan;Set %server_slimit% 4;set %server_dlimit% 4
+On Spawn;ServerFirst;Map XP4_Wlkrftry;Set %server_slimit% 3;set %server_dlimit% 4
+
+
+# Delete THIS PART BELOW if you don't want to decrease sniper/dmr slots for close-combat game modes
+On Spawn;ServerFirst;MapMode TeamDeathMatch;decr %server_slimit%;decr %server_dlimit%
+On Spawn;ServerFirst;MapMode SquadDeathMatch;decr %server_slimit%;decr %server_dlimit%
+
+#### Fix for team-switch or auto-balance sniper/dmr slot. If player is changing/balancing he's loosing slot.
+On Spawn;if %slimit_teamname_%p%% != %ptk%;if %server_slimit_name_[%p%]% == ON;Set %server_slimit_name_[%p%]% OFF;decr %server_slimit_team_[%slimit_teamname_%p%%]%;if %ini_lang_%p%% == POL;PlayerYell 9 Straciles slot na snajperke w wyniku autobalansu lub zmiany druzyny!
+On Spawn;if %slimit_teamname_%p%% != %ptk%;if %server_slimit_name_[%p%]% == ON;Set %server_slimit_name_[%p%]% OFF;decr %server_slimit_team_[%slimit_teamname_%p%%]%;if %ini_lang_%p%% == ENG;PlayerYell 9 You have lost sniperslot due to autobalance or team change!
+On Spawn;if %slimit_teamname_%p%% != %ptk%;if %server_slimit_name_[%p%]% == ON;Set %server_slimit_name_[%p%]% OFF;decr %server_slimit_team_[%slimit_teamname_%p%%]%;if %ini_lang_%p%% == GER;PlayerYell 9 Sie verloren sniperslot durch autobalance oder Veränderung der Team!
+
+#### Set up players player sniper and DMR slot as OFF by round start
+#### Thanks to this player can check out his slot even at the 1st second of round
+On Join;Set %server_slimit_name_[%p%]% OFF;Set %server_dlimit_name_[%p%]% OFF
+On Spawn;PlayerFirst;Set %server_slimit_name_[%p%]% OFF;Set %server_dlimit_name_[%p%]% OFF
+​
+
+#### -SNIPER KILL CHECKER-
+#### Delete PlayerYell 5 in both language versions if you dont wanna inform player using short YELL after reserving slot
+On Kill;Damage SniperRifle
+if %ini_lang_%p%% == POL;Not Admin;if %server_slimit_team_[%ptk%]% >= %server_slimit%;if %server_slimit_name_[%p%]% == OFF;PlayerSay [SNIPERs] Zostales zabity przez SNIPERLIMIT, wpisz !snipers i zobacz liste lub !sniperlimit po wiecej informacji.;Kill
+if %ini_lang_%p%% == POL;Not Admin;if %server_slimit_name_[%p%]% == OFF;incr %server_slimit_team_[%ptk%]%;Set %server_slimit_name_[%p%]% CHECKED;PlayerYell 5 Masz slot na snajperke!;set %slimit_teamname_%p%% %ptk%
+if %server_dmrlimit% == 1;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% +%p% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit%;Set %server_slimit_name_[%p%]% ON
+if %server_dmrlimit% == 0;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% +%p%;Set %server_slimit_name_[%p%]% ON
+
+On Kill;Not Admin;Damage SniperRifle
+
+if %ini_lang_%p%% == ENG;Not Admin;if %server_slimit_team_[%ptk%]% >= %server_slimit%;if %server_slimit_name_[%p%]% == OFF;PlayerSay [SNIPERs] You have been killed by SNIPERLIMIT, type !snipers for slots or !sniperinfo for more info.;Kill
+
+if %ini_lang_%p%% == ENG;Not Admin;if %server_slimit_name_[%p%]% == OFF;incr %server_slimit_team_[%ptk%]%;Set %server_slimit_name_[%p%]% CHECKED;PlayerYell 5 You have sniper slot!;set %slimit_teamname_%p%% %ptk%
+
+if %server_dmrlimit% == 1;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% +%p% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit%;Set %server_slimit_name_[%p%]% ON
+
+if %server_dmrlimit% == 0;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% +%p%;Set %server_slimit_name_[%p%]% ON
+
+On Kill;Not Admin;Damage SniperRifle
+if %ini_lang_%p%% == GER;Not Admin;if %server_slimit_team_[%ptk%]% >= %server_slimit%;if %server_slimit_name_[%p%]% == OFF;PlayerSay [SNIPERs] You have been killed by SNIPERLIMIT, type !snipers for slots or !sniperinfo for more info.;Kill
+if %ini_lang_%p%% == GER;Not Admin;if %server_slimit_name_[%p%]% == OFF;incr %server_slimit_team_[%ptk%]%;Set %server_slimit_name_[%p%]% CHECKED;PlayerYell 5 Du hast ein slot fur Sniper!;set %slimit_teamname_%p%% %ptk%
+if %server_dmrlimit% == 1;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% +%p% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit%;Set %server_slimit_name_[%p%]% ON
+if %server_dmrlimit% == 0;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% +%p%;Set %server_slimit_name_[%p%]% ON
+
+
+#### -DMR KILL CHECKER-
+#### Delete PlayerYell 5 in both language versions if you dont wanna inform player using short YELL after reserving slot
+
+On Kill;Not Admin;Damage DMR
+if %server_dmrlimit% == 1;if %ini_lang_%p%% == POL;Not Admin;if %server_dlimit_team_[%ptk%]% >= %server_dlimit%;if %server_dlimit_name_[%p%]% == OFF;PlayerSay [DMRs] Zostales zabity przez SNIPERLIMIT, wpisz !snipers i zobacz liste lub !sniperlimit po wiecej informacji.;Kill
+if %server_dmrlimit% == 1;if %ini_lang_%p%% == POL;Not Admin;if %server_dlimit_name_[%p%]% == OFF;incr %server_dlimit_team_[%ptk%]%;Set %server_dlimit_name_[%p%]% CHECKED;PlayerYell 5 Masz slot na wyborowy!
+if %server_dmrlimit% == 1;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit% +%p%;Set %server_dlimit_name_[%p%]% ON
+if %server_dmrlimit% == 0;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% +%p%;Set %server_dlimit_name_[%p%]% ON
+
+On Kill;Not Admin;Damage DMR
+if %server_dmrlimit% == 1;if %ini_lang_%p%% == ENG;Not Admin;if %server_dlimit_team_[%ptk%]% >= %server_dlimit%;if %server_dlimit_name_[%p%]% == OFF;PlayerSay [DMRs] You have been killed by SNIPERLIMIT, type !snipers for slots or !sniperlimit for more info.;Kill
+if %server_dmrlimit% == 1;if %ini_lang_%p%% == ENG;Not Admin;if %server_dlimit_name_[%p%]% == OFF;incr %server_dlimit_team_[%ptk%]%;Set %server_dlimit_name_[%p%]% CHECKED;PlayerYell 5 You have DMR slot!
+if %server_dmrlimit% == 1;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit% +%p%;Set %server_dlimit_name_[%p%]% ON
+if %server_dmrlimit% == 0;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% +%p%;Set %server_dlimit_name_[%p%]% ON
+
+On Kill;Not Admin;Damage DMR
+if %server_dmrlimit% == 1;if %ini_lang_%p%% == GER;Not Admin;if %server_dlimit_team_[%ptk%]% >= %server_dlimit%;if %server_dlimit_name_[%p%]% == OFF;PlayerSay [DMRs] Sie haben durch getotet worden SNIPERLIMIT, !snipers fur slots oder !sniperlimit fur Informationen.;Kill
+if %server_dmrlimit% == 1;if %ini_lang_%p%% == GER;Not Admin;if %server_dlimit_name_[%p%]% == OFF;incr %server_dlimit_team_[%ptk%]%;Set %server_dlimit_name_[%p%]% CHECKED;PlayerYell 5 Du hast ein slot fur DMR!
+if %server_dmrlimit% == 1;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit% +%p%;Set %server_dlimit_name_[%p%]% ON
+if %server_dmrlimit% == 0;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% +%p%;Set %server_dlimit_name_[%p%]% ON
+
+
+#### SNIPERS! Someone left his slot or left the game
+#### Delete PlayerYell 5 in both language versions if you dont wanna inform player using short YELL after reserving slot 
+On Kill;Not Admin;Not Damage SniperRifle;Not Damage Explosive;Not Damage Melee;Not Damage Handgun; Not Weapon U_SerbuShorty
+if %ini_lang_%p%% == POL;if %server_slimit_name_[%p%]% == ON;set %server_slimit_name_[%p%]% CHECKED;decr %server_slimit_team_[%ptk%]%;PlayerYell 8 Straciles slot na snajperke uzywajac %w%!
+if %server_dmrlimit% == 1;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% -%p% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit%;Set %server_slimit_name_[%p%]% OFF
+if %server_dmrlimit% == 0;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% -%p%;Set %server_slimit_name_[%p%]% OFF
+
+On Kill;Not Admin;Not Damage SniperRifle;Not Damage Explosive;Not Damage Melee;Not Damage Handgun;Not Weapon U_SerbuShorty
+if %ini_lang_%p%% == ENG;if %server_slimit_name_[%p%]% == ON;set %server_slimit_name_[%p%]% CHECKED;decr %server_slimit_team_[%ptk%]%;PlayerYell 8 You have lost sniper slot using %w%!
+if %server_dmrlimit% == 1;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% -%p% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit%;Set %server_slimit_name_[%p%]% OFF
+if %server_dmrlimit% == 0;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% -%p%;Set %server_slimit_name_[%p%]% OFF
+
+On Kill;Not Admin;Not Damage SniperRifle;Not Damage Explosive;Not Damage Melee;Not Damage Handgun;Not Weapon U_SerbuShorty
+if %ini_lang_%p%% == GER;if %server_slimit_name_[%p%]% == ON;set %server_slimit_name_[%p%]% CHECKED;decr %server_slimit_team_[%ptk%]%;PlayerYell 8 Du hast keinen Slot fur der Sniper mehr durch %w%!
+if %server_dmrlimit% == 1;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% -%p% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit%;Set %server_slimit_name_[%p%]% OFF
+if %server_dmrlimit% == 0;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% -%p%;Set %server_slimit_name_[%p%]% OFF
+
+On Leave;If %server_slimit_name_[%p%]% == ON;Set %server_slimit_name_[%p%]% CHECKED;decr %server_slimit_team_[%ptk%]%
+if %server_dmrlimit% == 1;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% -%p% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit%;Set %server_slimit_name_[%p%]% OFF
+if %server_dmrlimit% == 0;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% -%p%;Set %server_slimit_name_[%p%]% OFF
+
+
+#### DMRS! Someone left his slot or left the game
+#### Delete PlayerYell 5 in both language versions if you dont wanna inform player using short YELL after reserving slot 
+On Kill;Not Admin;Not Damage DMR;Not Damage Explosive;Not Damage Melee;Not Damage Handgun;Not Weapon U_SerbuShorty
+if %ini_lang_%p%% == POL;if %server_dlimit_name_[%p%]% == ON;set %server_dlimit_name_[%p%]% CHECKED;decr %server_dlimit_team_[%ptk%]%;PlayerYell 8 Straciles slot na wyborowy uzywajac %w%!
+if %server_dmrlimit% == 1;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit% -%p%;Set %server_dlimit_name_[%p%]% OFF
+if %server_dmrlimit% == 0;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% -%p%;Set %server_dlimit_name_[%p%]% OFF
+
+On Kill;Not Admin;Not Damage DMR;Not Damage Explosive;Not Damage Melee;Not Damage Handgun;Not Weapon U_SerbuShorty
+if %ini_lang_%p%% == ENG;if %server_dlimit_name_[%p%]% == ON;set %server_dlimit_name_[%p%]% CHECKED;decr %server_dlimit_team_[%ptk%]%;PlayerYell 8 You have lost DMR slot using %w%!
+if %server_dmrlimit% == 1;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit -%p%%;Set %server_dlimit_name_[%p%]% OFF
+if %server_dmrlimit% == 0;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% -%p%;Set %server_dlimit_name_[%p%]% OFF
+
+On Kill;Not Admin;Not Damage DMR;Not Damage Explosive;Not Damage Melee;Not Damage Handgun;Not Weapon U_SerbuShorty
+if %ini_lang_%p%% == ENG;if %server_dlimit_name_[%p%]% == ON;set %server_dlimit_name_[%p%]% CHECKED;decr %server_dlimit_team_[%ptk%]%;PlayerYell 8 Du hast keinen Slot fur der DMR mehr durch %w%!
+if %server_dmrlimit% == 1;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit% -%p%;Set %server_dlimit_name_[%p%]% OFF
+if %server_dmrlimit% == 0;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% -%p%;Set %server_dlimit_name_[%p%]% OFF
+
+On Leave;If %server_dlimit_name_[%p%]% == ON;Set %server_dlimit_name_[%p%]% CHECKED;decr %server_dlimit_team_[%ptk%]%
+if %server_dmrlimit% == 1;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit% -%p%;Set %server_dlimit_name_[%p%]% OFF
+if %server_dmrlimit% == 0;if %server_dlimit_name_[%p%]% == CHECKED;TeamSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% -%p%;Set %server_dlimit_name_[%p%]% OFF
+
+
+#### !snipers, avaiable slots and info about that player is sniper/dmr or not
+#### ON near slots says that player has slot, OFF = not.
+On Say;Text !snipers
+if %server_dmrlimit% == 1;if %ini_lang_%p%% == POL;PlayerSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% %server_slimit_name_[%p%]% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit% %server_dlimit_name_[%p%]%
+if %server_dmrlimit% == 0;if %ini_lang_%p%% == POL;PlayerSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% %server_slimit_name_[%p%]%
+if %ini_lang_%p%% == POL;PlayerSay [SNIPERs] OFF - nie posiadasz slota, ON - posiadasz slot. Wiecej? Wpisz !sniperlimit po detale.
+
+On Say;Text !snipers
+if %server_dmrlimit% == 1;if %ini_lang_%p%% == ENG;PlayerSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% %server_slimit_name_[%p%]% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit% %server_dlimit_name_[%p%]%
+if %server_dmrlimit% == 0;if %ini_lang_%p%% == ENG;PlayerSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% %server_slimit_name_[%p%]% 
+if %ini_lang_%p%% == ENG;PlayerSay [SNIPERs] OFF - you don't have slot, ON - you have slot. More info? Type !sniperlimit for details.
+
+On Say;Text !snipers
+if %server_dmrlimit% == 1;if %ini_lang_%p%% == GER;PlayerSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% %server_slimit_name_[%p%]% [DMRs] %server_dlimit_team_[%ptk%]%/%server_dlimit% %server_dlimit_name_[%p%]%
+if %server_dmrlimit% == 0;if %ini_lang_%p%% == GER;PlayerSay [SNIPERs] %server_slimit_team_[%ptk%]%/%server_slimit% %server_slimit_name_[%p%]% 
+if %ini_lang_%p%% == GER;PlayerSay [SNIPERs] OFF - du hast keinen Slot, ON - du hast einen Slot. Mehr Info? Gebe ein !sniperlimit fur Details.
+ 
+On RoundOver;Say This server is using ASDL (Advanced Sniper/DMR Limit) by Brodatv. Check it out: http://bit.ly/sniperlimit

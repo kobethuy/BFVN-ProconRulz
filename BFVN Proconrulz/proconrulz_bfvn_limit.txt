@@ -1,0 +1,85 @@
+#### VERSION 1.0
+#### ASDL - Advanced Shotgun Limit by KobeThuy
+
+#Set %ini_lang_%p%% ENG
+Set %ini_pflag_%p%% ENG
+
+On Say;Text !english;PlayerSay [LANGUAGE] Language changed to ENGLISH.;set %ini_lang_%p%% ENG
+ 
+#### Max shotgun per map, remember that you can set up different limit for maps, second numer is if map isn't recognized as "special-limit"
+#### Second number will be used IF MAP IS DIFFERENT than filter! Settings below are made for 48+ hc server.
+#### Change "Not Admin" to "Not Protected"
+
+#### Enable Shotgun limit using 1, disable using 0
+On Spawn;ServerFirst;Set %server_shlimit% 0
+On Spawn;Map MP_Prison;ServerFirst;Set %server_shlimit% 1
+
+#### You can set up sniper and dmr slots in-game using commands below, only the ongoing round
+On Say;Admin;Text !setshotgunlimit;Set %server_slimit% %targettext%;Set %server_slimit_name% 0;set %server_slimit_team_[%ptk%]% 0
+
+#### If map isn't on the list or isn't recognized by ProconRulz/Procon code will set up first line as default
+On Spawn;ServerFirst;Map MP_Prison;Set %server_slimit% 4
+On Spawn;Map MP_Prison;PlayerYell 8 Type !shotgun to check slot or get kick!
+
+#### UCAV tracker
+On Spawn;ServerFirst;Set %ucav_limit% 8
+On Spawn;Set %ucav_track_[%p%]% 0
+On Spawn; PlayerSay Type !ucav to check slot. The limit is %ucav_limit%
+
+#### Fix for team-switch or auto-balance sniper/dmr slot. If player is changing/balancing he's loosing slot.
+On Spawn;if %slimit_teamname_%p%% != %ptk%;if %server_slimit_name_[%p%]% == ON;Set %server_slimit_name_[%p%]% OFF;decr %server_slimit_team_[%slimit_teamname_%p%%]%;if %ini_lang_%p%% == ENG;PlayerYell 9 You have lost SHOTGUNlot due to autobalance or team change!
+
+#### Set up players player shotgun slot as OFF by round start
+#### Thanks to this player can check out his slot even at the 1st second of round
+On Join;Set %server_slimit_name_[%p%]% OFF;
+On Spawn;PlayerFirst;Set %server_slimit_name_[%p%]% OFF;
+
+#### -SHOTGUN KILL CHECKER-
+On Kill;Map MP_Prison;Damage Shotgun; Not Weapon U_SerbuShorty
+if %server_slimit_team_[%ptk%]% >= %server_slimit%;if %server_slimit_name_[%p%]% == OFF;PlayerYell 8 [SHOTGUN] You have been killed by SHOTGUNLIMIT, type !shotgun for slots for more info.
+		  	PlayerCount 2;Kick Use shotgun when don't have slot!
+		  	PlayerCount 1;PlayerYell 8 You don't have shotgun slot! One more time = kick;Kill
+
+On Kill;Map MP_Prison;Damage Shotgun;Not Weapon U_SerbuShorty
+if %server_slimit_name_[%p%]% == OFF;incr %server_slimit_team_[%ptk%]%;Set %server_slimit_name_[%p%]% CHECKED;PlayerYell 5 You have shotgun slot!;set %slimit_teamname_%p%% %ptk%
+
+if %server_shlimit% == 1;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SHOTGUN] %server_slimit_team_[%ptk%]%/%server_slimit% +%p%;Set %server_slimit_name_[%p%]% ON
+if %server_shlimit% == 0;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SHOTGUN] %server_slimit_team_[%ptk%]%/%server_slimit% +%p%;Set %server_slimit_name_[%p%]% ON
+
+#### Someone left his slot or left the game
+On Kill;Map MP_Prison;Not Damage Shotgun;Not Damage Explosive;Not Damage Melee;Not Damage Handgun
+if %server_slimit_name_[%p%]% == ON;set %server_slimit_name_[%p%]% CHECKED;decr %server_slimit_team_[%ptk%]%;PlayerYell 8 You have lost shotgun slot using %w%!
+if %server_shlimit% == 1;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SHOTGUN] %server_slimit_team_[%ptk%]%/%server_slimit% -%p%;Set %server_slimit_name_[%p%]% OFF
+if %server_shlimit% == 0;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SHOTGUN] %server_slimit_team_[%ptk%]%/%server_slimit% -%p%;Set %server_slimit_name_[%p%]% OFF
+
+On Leave;Map MP_Prison;If %server_slimit_name_[%p%]% == ON;Set %server_slimit_name_[%p%]% CHECKED;decr %server_slimit_team_[%ptk%]%
+if %server_shlimit% == 1;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SHOTGUN] %server_slimit_team_[%ptk%]%/%server_slimit% -%p%;Set %server_slimit_name_[%p%]% OFF
+if %server_shlimit% == 0;if %server_slimit_name_[%p%]% == CHECKED;TeamSay [SHOTGUN] %server_slimit_team_[%ptk%]%/%server_slimit% -%p%;Set %server_slimit_name_[%p%]% OFF
+
+#### !SHOTGUN, avaiable slots and info about that player has shotgun or not
+#### ON near slots says that player has slot, OFF = not.
+
+On Say;Map MP_Prison;Text !shotgun
+if %server_shlimit% == 1;PlayerSay [SHOTGUN] %server_slimit_team_[%ptk%]%/%server_slimit% %server_slimit_name_[%p%]% 
+if %server_shlimit% == 0;PlayerSay [SHOTGUN] %server_slimit_team_[%ptk%]%/%server_slimit% %server_slimit_name_[%p%]% 
+PlayerSay [SHOTGUN] OFF - you don't have slot, ON - you have slot. More info? Type !shotgun for details.
+
+#### Mortar, UCAV check
+
+On Kill;Weapon XP1/Gameplay/Gadgets/UCAV/UCAV_Launcher
+		PlayerCount %ucav_limit% + 2;Kick UCAV kills over limit (%ucav_limit% + 2/%ucav_limit%).
+		PlayerCount %ucav_limit% + 1;PlayerYell 8 That's enough! One more time = kick!;Kill
+		PlayerCount %ucav_limit%;PlayerYell 8 UCAV Limit: %ucav_track_[%p%]%/%ucav_limit%. Stop please!
+
+On Kill;Weapon XP1/Gameplay/Gadgets/UCAV/UCAV_Launcher
+if %ucav_track_[%p%]% < %ucav_limit%;incr %ucav_track_[%p%]%;PlayerYell 8 UCAV kill(s):%ucav_track_[%p%]%/%ucav_limit%
+
+On Say;Text !ucav
+PlayerSay [UCAV] %ucav_track_[%p%]%/%ucav_limit%. %ucav_limit% - %ucav_track_[%p%] kill(s) left
+
+#### Limit M224 Mortar in Operation Locker
+On Kill;Weapon U_M224;Map MP_Prison
+		PlayerCount 2;Kick No Mortar!
+		PlayerCount 1;PlayerYell 8 No Mortar! One more time = kick;Kill
+
+On RoundOver;Say This server belongs to BFVN. Plugin by [BFVN]-TG-CoGiaoThuy.
