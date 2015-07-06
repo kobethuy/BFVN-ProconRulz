@@ -4,6 +4,7 @@ Proconrulz script for BFVN BF4 server
 Server URL: http://battlelog.battlefield.com/bf4/servers/show/pc/492d6971-3f5d-4fa8-9ba2-ff15ac5077ee/BFVN-Conquest-Large-Locker-Party-Bikini-Sexy/
 
 Facebook group: https://www.facebook.com/groups/bfvnn/
+
 This is the Proconrulz script for BFVN server.
 
 # Changelog
