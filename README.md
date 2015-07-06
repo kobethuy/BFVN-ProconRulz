@@ -7,7 +7,7 @@ This is the Proconrulz script for BFVN server.
 
 # Changelog
 
-Version 1.0:
+Version 0.1 alpha:
   - Shotgun limit in Operation Locker (4 slots/team). Type *!shotgun* for further info.
     - 1st time violation: Kill with yelled warning.
     - 2nd time violation: Kick with stated reason.
