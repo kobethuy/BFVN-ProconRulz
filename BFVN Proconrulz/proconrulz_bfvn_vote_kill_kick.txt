@@ -1,0 +1,35 @@
+#### Set Kill delay
+On Spawn;PlayerFirst;Set %kill_delay% 1000
+
+#### Message
+On Spawn;PlayerFirst;PlayerSay To vote kill or kick, type !votekill <name> or !votekick <name>
+
+#### Vote Kill
+On Say;Text !votekill;
+    Set %server_votesneeded% 5
+    Set %server_votetarget% none;TargetPlayer;Set %server_votetarget% %t%;If %voting[%server_votetarget%]% == 0;Set %server_voteflag% 1
+    If %server_votetarget% != none;If %voting[%server_votetarget%]% == 1;PlayerSay Your vote to kill %server_votetarget% is already registered (%server_votekills[%server_votetarget%]%/%server_votesneeded%)
+    If %server_votetarget% == none;PlayerSay Votekill playername not found. Just type ANY UNIQUE part of the name
+
+On Say;If %server_voteflag% == 1;
+    Log server_voteflag is 1 (%p% said %text%). Target is %server_votetarget%
+    Set %voting[%server_votetarget%]% 1
+    Incr %server_votekills[%server_votetarget%]%
+    If %server_votekills[%server_votetarget%]% < %server_votesneeded%;Set %server_votesmore% %server_votesneeded%-%server_votekills[%server_votetarget%]%;Say %p% voted to kill %server_votetarget% (%server_votesmore% more votes needed)
+    If %server_votekills[%server_votetarget%]% >= %server_votesneeded%;TargetPlayer %server_votetarget%;Kill ;Yell %t% killed by vote
+    Set %server_voteflag% 0
+
+#### Vote Kick
+On Say;Text !votekick;
+    Set %server_votesneeded% 15
+    Set %server_votetarget% none;TargetPlayer;Set %server_votetarget% %t%;If %voting[%server_votetarget%]% == 0;Set %server_voteflag% 1
+    If %server_votetarget% != none;If %voting[%server_votetarget%]% == 1;PlayerSay Your vote to kick %server_votetarget% is already registered (%server_votekicks[%server_votetarget%]%/%server_votesneeded%)
+    If %server_votetarget% == none;PlayerSay Votekick playername not found. Just type ANY UNIQUE part of the name
+
+On Say;If %server_voteflag% == 1
+    Log server_voteflag is 1 (%p% said %text%). Target is %server_votetarget%
+    Set %voting[%server_votetarget%]% 1
+    Incr %server_votekicks[%server_votetarget%]%
+    If %server_votekicks[%server_votetarget%]% < %server_votesneeded%;Set %server_votesmore% %server_votesneeded%-%server_votekicks[%server_votetarget%]%;Say %p% voted to kick %server_votetarget% (%server_votesmore% more votes needed)
+    If %server_votekicks[%server_votetarget%]% >= %server_votesneeded%;TargetPlayer %server_votetarget%;Kick kicked by vote;Yell %t% kicked by vote
+    Set %server_voteflag% 0

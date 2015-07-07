@@ -14,6 +14,9 @@ On Say;Text !english;PlayerSay [LANGUAGE] Language changed to ENGLISH.;set %ini_
 On Spawn;ServerFirst;Set %server_shlimit% 0
 On Spawn;Map MP_Prison;ServerFirst;Set %server_shlimit% 1
 
+#### Set Kill delay
+On Spawn;PlayerFirst;Set %kill_delay% 1000
+
 #### You can set up sniper and dmr slots in-game using commands below, only the ongoing round
 On Say;Admin;Text !setshotgunlimit;Set %server_slimit% %targettext%;Set %server_slimit_name% 0;set %server_slimit_team_[%ptk%]% 0
 
@@ -24,7 +27,7 @@ On Spawn;Map MP_Prison;PlayerYell 8 Type !shotgun to check slot or get kick!
 #### UCAV tracker
 On Spawn;ServerFirst;Set %ucav_limit% 8
 On Spawn;Set %ucav_track_[%p%]% 0
-On Spawn; PlayerSay Type !ucav to check slot. The limit is %ucav_limit%
+On Spawn;PlayerFirst;PlayerSay Type !ucav to check slot. Your limit: %ucav_track_[%p%]%/%ucav_limit%
 
 #### Fix for team-switch or auto-balance sniper/dmr slot. If player is changing/balancing he's loosing slot.
 On Spawn;if %slimit_teamname_%p%% != %ptk%;if %server_slimit_name_[%p%]% == ON;Set %server_slimit_name_[%p%]% OFF;decr %server_slimit_team_[%slimit_teamname_%p%%]%;if %ini_lang_%p%% == ENG;PlayerYell 9 You have lost SHOTGUNlot due to autobalance or team change!
@@ -38,7 +41,7 @@ On Spawn;PlayerFirst;Set %server_slimit_name_[%p%]% OFF;
 On Kill;Map MP_Prison;Damage Shotgun; Not Weapon U_SerbuShorty
 if %server_slimit_team_[%ptk%]% >= %server_slimit%;if %server_slimit_name_[%p%]% == OFF;PlayerYell 8 [SHOTGUN] You have been killed by SHOTGUNLIMIT, type !shotgun for slots for more info.
 		  	PlayerCount 2;Kick Use shotgun when don't have slot!
-		  	PlayerCount 1;PlayerYell 8 You don't have shotgun slot! One more time = kick;Kill
+		  	PlayerCount 1;PlayerYell 8 You don't have shotgun slot! One more time = kick;Kill %kill_delay%
 
 On Kill;Map MP_Prison;Damage Shotgun;Not Weapon U_SerbuShorty
 if %server_slimit_name_[%p%]% == OFF;incr %server_slimit_team_[%ptk%]%;Set %server_slimit_name_[%p%]% CHECKED;PlayerYell 5 You have shotgun slot!;set %slimit_teamname_%p%% %ptk%
@@ -68,7 +71,7 @@ PlayerSay [SHOTGUN] OFF - you don't have slot, ON - you have slot. More info? Ty
 
 On Kill;Weapon XP1/Gameplay/Gadgets/UCAV/UCAV_Launcher
 		PlayerCount %ucav_limit% + 2;Kick UCAV kills over limit (%ucav_limit% + 2/%ucav_limit%).
-		PlayerCount %ucav_limit% + 1;PlayerYell 8 That's enough! One more time = kick!;Kill
+		PlayerCount %ucav_limit% + 1;PlayerYell 8 That's enough! One more time = kick!;Kill %kill_delay%
 		PlayerCount %ucav_limit%;PlayerYell 8 UCAV Limit: %ucav_track_[%p%]%/%ucav_limit%. Stop please!
 
 On Kill;Weapon XP1/Gameplay/Gadgets/UCAV/UCAV_Launcher
@@ -80,6 +83,9 @@ PlayerSay [UCAV] %ucav_track_[%p%]%/%ucav_limit%. %ucav_limit% - %ucav_track_[%p
 #### Limit M224 Mortar in Operation Locker
 On Kill;Weapon U_M224;Map MP_Prison
 		PlayerCount 2;Kick No Mortar!
-		PlayerCount 1;PlayerYell 8 No Mortar! One more time = kick;Kill
-
-On RoundOver;Say This server belongs to BFVN. Plugin by [BFVN]-TG-CoGiaoThuy.
+		PlayerCount 1;PlayerYell 8 No Mortar! One more time = kick;Kill %kill_delay%
+		
+#### Limit M224 Mortar in Rush mode
+On Kill;Weapon U_M224;MapMode Rush
+		PlayerCount 2;Kick No Mortar in Rush!
+		PlayerCount 1;PlayerYell 8 No Mortar in Rush! One more time = kick;Kill %kill_delay%
